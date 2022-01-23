@@ -1,0 +1,61 @@
+before:
+  hooks:
+    - go generate -v ./...
+builds:
+- id: errsvr
+  env:
+  - CGO_ENABLED=0
+  main: server.go
+  binary: errsvr
+  ldflags:
+  - -s -w -X github.com/bhojpur/errors/cmd/server.version={{.Version}}-{{.ShortCommit}}
+- id: errctl
+  env:
+  - CGO_ENABLED=0
+  main: client.go
+  binary: errctl
+  flags:
+    - -tags=errctl
+  ldflags:
+  - -s -w -X github.com/bhojpur/errors/cmd/client.version={{.Version}}-{{.ShortCommit}}
+archives:
+- id: errsvr
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    386: i386
+    amd64: x86_64
+  builds:
+  - errsvr
+- id: errctl
+  files:
+  - "none*"
+  format: binary
+  builds:
+  - errctl
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    386: i386
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+release:
+  prerelease: auto
+dockers:
+  - goos: linux
+    goarch: amd64
+    goarm: ''
+    dockerfile: Dockerfile
+    image_templates:
+    - "ghcr.io/bhojpur/errors:{{ .Tag }}"
+    extra_files:
+    - README.md

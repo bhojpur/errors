@@ -1,4 +1,4 @@
-package cmd
+package validation
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -21,40 +21,47 @@ package cmd
 // THE SOFTWARE.
 
 import (
-	"fmt"
-	"os"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	"sort"
+	"strings"
 )
 
-var verbose bool
+// Errors is an array of multiple errors and conforms to the error interface.
+type Errors []error
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "errsvr",
-	Short: "Bhojpur ErrorEngine is an intelligent data errors analysis server engine",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+// Errors returns itself.
+func (es Errors) Errors() []error {
+	return es
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func (es Errors) Error() string {
+	var errs []string
+	for _, e := range es {
+		errs = append(errs, e.Error())
 	}
+	sort.Strings(errs)
+	return strings.Join(errs, ";")
 }
 
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
+// Error encapsulates a name, an error and whether there's a custom error message or not.
+type Error struct {
+	Name                     string
+	Err                      error
+	CustomErrorMessageExists bool
+
+	// Validator indicates the name of the validator that failed
+	Validator string
+	Path      []string
+}
+
+func (e Error) Error() string {
+	if e.CustomErrorMessageExists {
+		return e.Err.Error()
+	}
+
+	errName := e.Name
+	if len(e.Path) > 0 {
+		errName = strings.Join(append(e.Path, e.Name), ".")
+	}
+
+	return errName + ": " + e.Err.Error()
 }

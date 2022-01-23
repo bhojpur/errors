@@ -62,7 +62,7 @@ var rootCmdOpts struct {
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "errors",
-	Short: "Bhojpur Errors is an intelligent analysis engine powered by Kubernetes",
+	Short: "Bhojpur ErrorControl is a versatile, intelligent analysis client engine",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(log.DebugLevel)

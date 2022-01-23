@@ -1,4 +1,4 @@
-package cmd
+package validation
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -20,41 +20,36 @@ package cmd
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import (
-	"fmt"
-	"os"
+import "time"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-)
-
-var verbose bool
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "errsvr",
-	Short: "Bhojpur ErrorEngine is an intelligent data errors analysis server engine",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+func ExampleToBoolean() {
+	// Returns the boolean value represented by the string.
+	// It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.
+	// Any other value returns an error.
+	_, _ = ToBoolean("false")  // false, nil
+	_, _ = ToBoolean("T")      // true, nil
+	_, _ = ToBoolean("123123") // false, error
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+func ExampleToInt() {
+	_, _ = ToInt(1.0)     // 1, nil
+	_, _ = ToInt("-124")  // -124, nil
+	_, _ = ToInt("false") // 0, error
 }
 
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
+func ExampleToFloat() {
+	_, _ = ToFloat("-124.2e123") // -124.2e123, nil
+	_, _ = ToFloat("false")      // 0, error
+}
+
+func ExampleToString() {
+	_ = ToString(new(interface{}))        // 0xc000090200
+	_ = ToString(time.Second + time.Hour) // 1h1s
+	_ = ToString(123)                     // 123
+}
+
+func ExampleToJSON() {
+	_, _ = ToJSON([]int{1, 2, 3})          // [1, 2, 3]
+	_, _ = ToJSON(map[int]int{1: 2, 2: 3}) // { "1": 2, "2": 3 }
+	_, _ = ToJSON(func() {})               // error
 }

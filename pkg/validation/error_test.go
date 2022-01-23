@@ -1,4 +1,4 @@
-package cmd
+package validation
 
 // Copyright (c) 2018 Bhojpur Consulting Private Limited, India. All rights reserved.
 
@@ -22,39 +22,28 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
+	"testing"
 )
 
-var verbose bool
+func TestErrorsToString(t *testing.T) {
+	t.Parallel()
+	customErr := &Error{Name: "Custom Error Name", Err: fmt.Errorf("stdlib error")}
+	customErrWithCustomErrorMessage := &Error{Name: "Custom Error Name 2", Err: fmt.Errorf("Bad stuff happened"), CustomErrorMessageExists: true}
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "errsvr",
-	Short: "Bhojpur ErrorEngine is an intelligent data errors analysis server engine",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if verbose {
-			log.SetLevel(log.DebugLevel)
-			log.Debug("verbose logging enabled")
-		}
-	},
-
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	var tests = []struct {
+		param1   Errors
+		expected string
+	}{
+		{Errors{}, ""},
+		{Errors{fmt.Errorf("Error 1")}, "Error 1"},
+		{Errors{fmt.Errorf("Error 1"), fmt.Errorf("Error 2")}, "Error 1;Error 2"},
+		{Errors{customErr, fmt.Errorf("Error 2")}, "Custom Error Name: stdlib error;Error 2"},
+		{Errors{fmt.Errorf("Error 123"), customErrWithCustomErrorMessage}, "Bad stuff happened;Error 123"},
 	}
-}
-
-func init() {
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "en/disable verbose logging")
+	for _, test := range tests {
+		actual := test.param1.Error()
+		if actual != test.expected {
+			t.Errorf("Expected Error() to return '%v', got '%v'", test.expected, actual)
+		}
+	}
 }
