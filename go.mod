@@ -6,7 +6,7 @@ require (
 	github.com/lib/pq v1.10.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.1.3
-	google.golang.org/grpc v1.34.0
+	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.27.1
 	k8s.io/apimachinery v0.21.1
 	k8s.io/client-go v1.5.2
@@ -18,7 +18,7 @@ require (
 	github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96 // indirect
 	github.com/go-logr/logr v0.2.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/googleapis/gnostic v0.4.1 // indirect
 	github.com/imdario/mergo v0.3.5 // indirect
