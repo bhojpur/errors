@@ -3,7 +3,7 @@ module github.com/bhojpur/errors
 go 1.17
 
 require (
-	github.com/lib/pq v1.10.0
+	github.com/lib/pq v1.10.8
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.1.3
 	google.golang.org/grpc v1.34.0
