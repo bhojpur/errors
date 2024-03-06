@@ -7,7 +7,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v1.1.3
 	google.golang.org/grpc v1.34.0
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.33.0
 	k8s.io/apimachinery v0.21.1
 	k8s.io/client-go v1.5.2
 )
